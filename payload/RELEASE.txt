@@ -1,0 +1,9 @@
+ix4-200d integrated recovery experimental-0.3
+Recovery base: Cloud Edition 3.2.6.17887 (original image checksums pinned).
+Additional runtime: Samba 4.18.11; nginx 1.26.3; OpenSSL 3.0.22.
+Linux kernel and initrd unchanged. No credentials or private certificates from a live NAS included.
+HTTPS: 443 with a unique certificate generated on first boot.
+SMB: 445, SMB2+ and mandatory signing, authenticated users only.
+Experimental. Install only with all original drives removed and expendable test disks fitted.
+The ORIGINAL vendor recovery installer rewrites NAND kernel/initrd and can repartition attached disks.
+Not a vendor-supported or physically recovery-tested release.

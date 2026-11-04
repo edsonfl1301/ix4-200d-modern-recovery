@@ -1,0 +1,30 @@
+name: Source checks
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Python syntax
+        run: python -m compileall -q .
+      - name: Shell syntax
+        run: |
+          sh -n build-on-linux.sh
+          sh -n payload/bootstrap.sh
+          sh -n payload/service.sh
+          sh -n payload/rc.local
+      - name: Runtime manifest
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          records=json.loads(pathlib.Path('packages-manifest.json').read_text())
+          assert records
+          for name, record in records.items():
+              assert record['feed_url'].startswith('https://downloads.openwrt.org/releases/24.10.4/')
+              assert len(record.get('SHA256sum') or record['download_sha256'])==64, name
+          PY

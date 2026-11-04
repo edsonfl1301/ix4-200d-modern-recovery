@@ -1,0 +1,27 @@
+user nobody;
+worker_processes 1;
+pid /var/run/nginx-modern.pid;
+error_log /var/log/nginx/error.log warn;
+events { worker_connections 128; }
+http {
+    access_log off;
+    client_body_temp_path /var/lib/nginx/body;
+    proxy_temp_path /var/lib/nginx/proxy;
+    server {
+        listen @HTTPS_PORT@ ssl;
+        server_name _;
+        ssl_certificate /etc/ssl/iomega.crt;
+        ssl_certificate_key /etc/ssl/iomega.key;
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_ciphers HIGH:!aNULL:!MD5:!3DES;
+        client_max_body_size 256m;
+        location / {
+            proxy_pass http://127.0.0.1:80;
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-Proto https;
+            proxy_redirect http://$host/ https://$http_host/;
+            proxy_request_buffering off;
+            proxy_read_timeout 120s;
+        }
+    }
+}
